@@ -103,7 +103,7 @@ function renderLogsPage(linesParam) {
 
 function start(config, store) {
   const app = express();
-  const port = process.env.PORT || 3001;
+  const port = process.env.PORT || 3002; // 3000=stock-bot、3001=Uptime Kuma 已占用
 
   app.get('/', (req, res) => {
     res.set('Content-Type', 'text/html; charset=utf-8');
