@@ -1,4 +1,5 @@
 require('dotenv').config();
+require('./src/error-notify').install();
 const schedule = require('node-schedule');
 const config = require('./config.json');
 const { fetchWatch } = require('./src/crawler');
