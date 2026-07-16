@@ -96,6 +96,9 @@ async function runWatch(watch, seen) {
     }
   }
 
+  // Web 介面：/ 狀態頁、/logs 瀏覽器看 log
+  require('./src/web').start(config, store);
+
   // 每個監控條件依自己的 cron 排程執行；沒設 schedule 的用全域 intervalMinutes
   for (const watch of config.watches) {
     if (watch.schedule) {
