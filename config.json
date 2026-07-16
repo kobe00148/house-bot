@@ -1,0 +1,23 @@
+{
+  "intervalMinutes": 30,
+  "maxPages": 3,
+  "pageDelayMs": 3000,
+  "watchDelayMs": 5000,
+  "notifyPriceDrop": true,
+  "watches": [
+    {
+      "name": "台中西屯、南屯 1500-2000萬 1-10年屋齡 3-4房",
+      "searchUrl": "https://sale.591.com.tw/?regionid=8&section=104,105&kind=9&price=1500_2000&houseage=$1_$10&parking=1&firstRow=0&shType=list&type=2&pattern=3,4",
+      "excludeNewHouse": true,
+      "excludeKeywords": [],
+      "schedule": "0 9 * * *"
+    },
+    {
+      "name": "台中西屯、南屯 新建案 3-4房 1500-2500萬",
+      "searchUrl": "https://newhouse.591.com.tw/list?room=3,4&regionid=8&sectionid=104,105&total_price=1500_2500",
+      "maxPages": 12,
+      "excludeKeywords": [],
+      "schedule": "0 15 * * *"
+    }
+  ]
+}
