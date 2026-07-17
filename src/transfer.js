@@ -4,7 +4,8 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 
-const API = 'https://opendata.taichung.gov.tw/api/v1/data_store.view?rid=eded6c07-3652-45cd-98b9-069f75049365&limit=400';
+// 注意：data_store.view API 只存 50 筆預覽，完整歷史要抓 CSV 檔
+const CSV_URL = 'https://newdatacenter.taichung.gov.tw/api/v1/no-auth/resource.download?rid=eded6c07-3652-45cd-98b9-069f75049365';
 const STATE_FILE = path.join(__dirname, '..', 'data', 'transfer-state.json');
 
 /** 民國年月 (如 11506) → '2026-06' */
@@ -14,14 +15,16 @@ function rocYmToMonth(s) {
   return `${Number(m[1]) + 1911}-${m[2]}`;
 }
 
-/** 抓全部月度資料 → { 'YYYY-MM': 建物棟數 } */
+/** 抓全部月度資料 → { 'YYYY-MM': 建物棟數 }（CSV 欄位：機關,縣市,年月,件數,土地筆數,土地面積,建物棟數,建物面積） */
 async function fetchCounts() {
-  const res = await axios.get(API, { timeout: 60000 });
-  const records = (((res.data || {}).payload || {}).records) || [];
+  const res = await axios.get(CSV_URL, { timeout: 60000, maxRedirects: 5 });
+  const lines = String(res.data).split('\n');
   const out = {};
-  for (const r of records) {
-    const month = rocYmToMonth(r.column_3);
-    const count = Number(r.column_7);
+  for (let i = 1; i < lines.length; i++) {
+    const c = lines[i].replace(/["﻿\r]/g, '').split(',');
+    if (c.length < 7) continue;
+    const month = rocYmToMonth(c[2]);
+    const count = Number(c[6]);
     if (month && count > 0) out[month] = count;
   }
   return out;
