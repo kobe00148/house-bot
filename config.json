@@ -13,8 +13,8 @@
       "schedule": "0 9 * * *"
     },
     {
-      "name": "台中西屯、南屯 新建案 3-4房 1500-2500萬",
-      "searchUrl": "https://newhouse.591.com.tw/list?room=3,4&regionid=8&sectionid=104,105&total_price=1500_2500",
+      "name": "台中西屯、南屯 預售屋 3-4房 1500-2500萬",
+      "searchUrl": "https://newhouse.591.com.tw/list?room=3,4&regionid=8&sectionid=104,105&total_price=1500_2500&build_type=1",
       "maxPages": 12,
       "excludeKeywords": [],
       "schedule": "0 15 * * *"
