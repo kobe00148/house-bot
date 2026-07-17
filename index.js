@@ -7,6 +7,7 @@ const { formatItem, send, sendAdmin } = require('./src/telegram');
 const store = require('./src/store');
 const moi = require('./src/moi');
 const stats = require('./src/stats');
+const transfer = require('./src/transfer');
 
 const ONCE = process.argv.includes('--once');
 const DRY = process.argv.includes('--dry');
@@ -103,6 +104,13 @@ async function runMoiReports() {
   }
 }
 
+async function runTransferReport() {
+  const r = await transfer.buildReportIfNew();
+  if (!r) return; // 尚無新月份或已推播過
+  await send(r.text, { dry: DRY }); // 台中量能推主群組
+  console.log(`[${now()}] [移轉棟數] ${r.month} 已推播`);
+}
+
 async function runWeeklyReports() {
   const seen = store.load();
   for (const watch of config.watches.filter(stats.isSaleWatch)) {
@@ -143,7 +151,9 @@ async function runWeeklyReports() {
   // 📊 591 開價快照：每天 09:30；週報：每週日 20:00
   schedule.scheduleJob('30 9 * * *', () => stats.snapshotAll(config.watches).catch((e) => console.error('開價快照失敗:', e.message)));
   schedule.scheduleJob(config.weekly591Schedule || '0 20 * * 0', () => runWeeklyReports().catch((e) => console.error('開價週報失敗:', e.message)));
-  console.log(`[${now()}] 報表排程：實價登錄月報(每月11日10:00)、開價快照(每日09:30)、開價週報(週日20:00)`);
+  // 🏘 台中移轉棟數：地政局每月 5-7 日左右更新，5-12 日每天檢查一次、抓到新月份才推播
+  schedule.scheduleJob('30 10 5-12 * *', () => runTransferReport().catch((e) => console.error('移轉棟數月報失敗:', e.message)));
+  console.log(`[${now()}] 報表排程：實價登錄月報(每月11日10:00)、開價快照(每日09:30)、開價週報(週日20:00)、移轉棟數(每月5-12日檢查)`);
 
   // 每個監控條件依自己的 cron 排程執行；沒設 schedule 的用全域 intervalMinutes
   for (const watch of config.watches) {
