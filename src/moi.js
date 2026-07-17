@@ -138,9 +138,11 @@ function median(arr) {
 async function buildReports(monthsShown = 6) {
   const merged = await fetchAll();
   const reports = [];
+  const nowMonth = new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Taipei' }).slice(0, 7);
   for (const r of REGIONS) {
     const byMonth = merged[r.key];
-    const months = Object.keys(byMonth).sort().slice(-monthsShown);
+    // 排除未來月份（官方資料偶有日期誤登）
+    const months = Object.keys(byMonth).filter((m) => m <= nowMonth).sort().slice(-monthsShown);
     if (!months.length) {
       reports.push({ key: r.key, label: r.label, text: `📈 實價登錄月報｜${r.label}（住宅買賣）\n\n近期無成交登錄資料` });
       continue;
