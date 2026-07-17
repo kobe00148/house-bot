@@ -151,15 +151,20 @@ async function buildReports(monthsShown = 6) {
       const arr = byMonth[m];
       return `${m}｜${median(arr).toFixed(1)} 萬/坪｜${arr.length} 件`;
     });
-    const first = median(byMonth[months[0]]);
-    const last = median(byMonth[months[months.length - 1]]);
+    // 趨勢比較避開件數過少的月份（登錄還在累積會拉歪中位數）
+    const medianCount = median(months.map((m) => byMonth[m].length));
+    const solid = months.filter((m) => byMonth[m].length >= Math.max(3, medianCount * 0.4));
+    const mA = solid[0] || months[0];
+    const mB = solid[solid.length - 1] || months[months.length - 1];
+    const first = median(byMonth[mA]);
+    const last = median(byMonth[mB]);
     const pct = ((last - first) / first * 100).toFixed(1);
     const text = [
       `📈 實價登錄月報｜${r.label}（住宅買賣）`,
       '',
       ...lines,
       '',
-      `${months[0]} → ${months[months.length - 1]} 中位數單價 ${first.toFixed(1)} → ${last.toFixed(1)} 萬/坪（${pct >= 0 ? '+' : ''}${pct}%）`,
+      `${mA} → ${mB} 中位數單價 ${first.toFixed(1)} → ${last.toFixed(1)} 萬/坪（${pct >= 0 ? '+' : ''}${pct}%）`,
       '註：登錄申報有時間差，最近 1-2 個月件數尚在累積',
     ].join('\n');
     reports.push({ key: r.key, label: r.label, text });
