@@ -80,6 +80,7 @@ async function runWatch(watch, seen) {
   if (notified === 0 && config.noNewsHeartbeat) {
     const hhmm = new Date().toLocaleTimeString('zh-TW', { timeZone: 'Asia/Taipei', hour12: false, hour: '2-digit', minute: '2-digit' });
     await sendAdmin(`✅ ${hhmm} ${watch.name} 檢查完成，無新物件（${items.length} 筆均已記錄）`, { dry: DRY });
+    console.log(`[${now()}] [${watch.name}] 無新物件，心跳已發到管理者私聊`);
   }
 }
 
