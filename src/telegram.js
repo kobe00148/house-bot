@@ -21,9 +21,11 @@ function headEmoji(watchName, source) {
 
 function formatItem(item, watchName, kind) {
   const label = kind === 'priceDrop' ? '降價' : '新上架';
+  // 段落結構：標題段 → 空行 → 房屋資訊段 → 空行 → 連結
   const lines = [
     `${headEmoji(watchName, item.source)} <b>${label}</b>｜${escapeHtml(watchName)}`,
     escapeHtml(stripEmoji(item.title)),
+    '',
   ];
   if (item.showPrice) {
     lines.push(`${escapeHtml(item.showPrice)}${item.unitPrice ? `（${escapeHtml(item.unitPrice)}）` : ''}`);
