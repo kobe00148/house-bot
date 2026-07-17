@@ -6,22 +6,22 @@
   "notifyPriceDrop": true,
   "watches": [
     {
-      "name": "台中西屯、南屯 1500-2000萬 0-10年屋齡 3-4房",
-      "searchUrl": "https://sale.591.com.tw/?regionid=8&section=104,105&kind=9&price=1500_2000&houseage=$0_$10&parking=1&firstRow=0&shType=list&type=2&pattern=3,4",
+      "name": "台中西屯、南屯 中古屋 3房 1400-1800萬 0-10年",
+      "searchUrl": "https://sale.591.com.tw/?regionid=8&section=104,105&kind=9&price=1400_1800&houseage=$0_$10&parking=1&firstRow=0&shType=list&type=2&pattern=3",
       "excludeNewHouse": true,
       "excludeKeywords": [],
       "schedule": "0 9 * * *"
     },
     {
-      "name": "台中西屯、南屯 預售屋 3-4房 1500-2500萬",
-      "searchUrl": "https://newhouse.591.com.tw/list?room=3,4&regionid=8&sectionid=104,105&total_price=1500_2500&build_type=1",
+      "name": "台中西屯、南屯 預售屋 3房 1400-1800萬",
+      "searchUrl": "https://newhouse.591.com.tw/list?room=3&regionid=8&sectionid=104,105&total_price=1400_1800&build_type=1",
       "maxPages": 12,
       "excludeKeywords": [],
       "schedule": "0 15 * * *"
     },
     {
-      "name": "台中西屯、南屯 新成屋 3-4房 1500-2500萬",
-      "searchUrl": "https://newhouse.591.com.tw/list?room=3,4&regionid=8&sectionid=104,105&total_price=1500_2500&build_type=2",
+      "name": "台中西屯、南屯 新成屋 3房 1400-1800萬",
+      "searchUrl": "https://newhouse.591.com.tw/list?room=3&regionid=8&sectionid=104,105&total_price=1400_1800&build_type=2",
       "maxPages": 12,
       "excludeKeywords": [],
       "schedule": "0 12 * * *"
