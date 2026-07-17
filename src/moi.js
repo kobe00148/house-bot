@@ -77,8 +77,11 @@ function loadCache() {
   try { return JSON.parse(fs.readFileSync(CACHE_FILE, 'utf8')); } catch { return { seasons: {} }; }
 }
 
-async function downloadSeason(season) {
-  const url = `https://plvr.land.moi.gov.tw/DownloadSeason?season=${season}&type=zip&fileName=lvr_landcsv.zip`;
+async function downloadSeason(season, isCurrent) {
+  // 當季尚未發布季度檔，用「本期」滾動端點；歷史季度用 DownloadSeason
+  const url = isCurrent
+    ? 'https://plvr.land.moi.gov.tw/Download?type=zip&fileName=lvr_landcsv.zip'
+    : `https://plvr.land.moi.gov.tw/DownloadSeason?season=${season}&type=zip&fileName=lvr_landcsv.zip`;
   const res = await axios.get(url, { responseType: 'arraybuffer', timeout: 300000 });
   return Buffer.from(res.data);
 }
@@ -95,13 +98,17 @@ async function fetchAll(seasonsCount = 4) {
     const isRecent = i < 2; // 最近兩季登錄還在累積，每次重抓
     if (!isRecent && cache.seasons[s]) continue;
     console.log(`[實價登錄] 下載 ${s} ...`);
-    const zip = new AdmZip(await downloadSeason(s));
-    const entry = { fetchedAt: Date.now() };
-    for (const r of REGIONS) {
-      const buf = zip.readFile(r.file);
-      entry[r.key] = buf ? aggregateCsv(buf.toString('utf8'), r.districts) : {};
+    try {
+      const zip = new AdmZip(await downloadSeason(s, i === 0));
+      const entry = { fetchedAt: Date.now() };
+      for (const r of REGIONS) {
+        const buf = zip.readFile(r.file);
+        entry[r.key] = buf ? aggregateCsv(buf.toString('utf8'), r.districts) : {};
+      }
+      cache.seasons[s] = entry;
+    } catch (e) {
+      console.error(`[實價登錄] ${s} 下載/解析失敗，跳過:`, e.message);
     }
-    cache.seasons[s] = entry;
   }
   fs.mkdirSync(path.dirname(CACHE_FILE), { recursive: true });
   fs.writeFileSync(CACHE_FILE, JSON.stringify(cache));
