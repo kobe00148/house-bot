@@ -9,6 +9,7 @@
     "dry": "node index.js --once --dry"
   },
   "dependencies": {
+    "adm-zip": "^0.6.0",
     "axios": "^1.6.0",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",

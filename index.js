@@ -5,6 +5,8 @@ const config = require('./config.json');
 const { fetchWatch } = require('./src/crawler');
 const { formatItem, send, sendAdmin } = require('./src/telegram');
 const store = require('./src/store');
+const moi = require('./src/moi');
+const stats = require('./src/stats');
 
 const ONCE = process.argv.includes('--once');
 const DRY = process.argv.includes('--dry');
@@ -84,6 +86,33 @@ async function runWatch(watch, seen) {
   }
 }
 
+// 各區域報表的推播對象：北港報表推北港群組，其餘推主群組
+function reportChatId(regionKey) {
+  if (regionKey === 'beigang') {
+    const w = config.watches.find((x) => x.name.startsWith('雲林北港'));
+    return w && w.chatId;
+  }
+  return undefined; // 主群組
+}
+
+async function runMoiReports() {
+  const reports = await moi.buildReports();
+  for (const r of reports) {
+    await send(r.text, { dry: DRY, chatId: reportChatId(r.key) });
+    console.log(`[${now()}] [實價登錄月報] ${r.label} 已推播`);
+  }
+}
+
+async function runWeeklyReports() {
+  const seen = store.load();
+  for (const watch of config.watches.filter(stats.isSaleWatch)) {
+    const text = stats.weeklyText(watch, seen[watch.name]);
+    if (!text) continue;
+    await send(text, { dry: DRY, chatId: watch.chatId });
+    console.log(`[${now()}] [開價週報] ${watch.name} 已推播`);
+  }
+}
+
 (async () => {
   console.log(`[${now()}] house-bot 啟動${DRY ? '（dry-run 模式，不發 Telegram）' : ''}`);
 
@@ -108,6 +137,13 @@ async function runWatch(watch, seen) {
 
   // Web 介面：/ 狀態頁、/logs 瀏覽器看 log
   require('./src/web').start(config, store);
+
+  // 📈 實價登錄月報：每月 11 日 10:00（官方每月 1/11/21 日更新資料）
+  schedule.scheduleJob(config.moiMonthlySchedule || '0 10 11 * *', () => runMoiReports().catch((e) => console.error('實價登錄月報失敗:', e.message)));
+  // 📊 591 開價快照：每天 09:30；週報：每週日 20:00
+  schedule.scheduleJob('30 9 * * *', () => stats.snapshotAll(config.watches).catch((e) => console.error('開價快照失敗:', e.message)));
+  schedule.scheduleJob(config.weekly591Schedule || '0 20 * * 0', () => runWeeklyReports().catch((e) => console.error('開價週報失敗:', e.message)));
+  console.log(`[${now()}] 報表排程：實價登錄月報(每月11日10:00)、開價快照(每日09:30)、開價週報(週日20:00)`);
 
   // 每個監控條件依自己的 cron 排程執行；沒設 schedule 的用全域 intervalMinutes
   for (const watch of config.watches) {
