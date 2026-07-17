@@ -166,6 +166,7 @@ async function buildReports(monthsShown = 6) {
       '',
       `${mA} → ${mB} 中位數單價 ${first.toFixed(1)} → ${last.toFixed(1)} 萬/坪（${pct >= 0 ? '+' : ''}${pct}%）`,
       '註：登錄申報有時間差，最近 1-2 個月件數尚在累積',
+      ...(medianCount < 10 ? ['註：本區成交量小，中位數波動大，趨勢僅供參考'] : []),
     ].join('\n');
     reports.push({ key: r.key, label: r.label, text });
   }
