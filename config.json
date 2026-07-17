@@ -24,7 +24,7 @@
       "searchUrl": "https://newhouse.591.com.tw/list?room=3,4&regionid=8&sectionid=104,105&total_price=1500_2500&build_type=2",
       "maxPages": 12,
       "excludeKeywords": [],
-      "schedule": "0 15 * * *"
+      "schedule": "0 12 * * *"
     }
   ],
   "noNewsHeartbeat": true
