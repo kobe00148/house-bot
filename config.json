@@ -19,5 +19,6 @@
       "excludeKeywords": [],
       "schedule": "0 15 * * *"
     }
-  ]
+  ],
+  "noNewsHeartbeat": true
 }

@@ -29,13 +29,13 @@ function formatItem(item, watchName, kind) {
   return lines.join('\n');
 }
 
-async function send(text, { dry = false } = {}) {
+async function send(text, { dry = false, chatId: chatIdOverride } = {}) {
   if (dry) {
     console.log('[DRY-RUN] 不發送，訊息內容：\n' + text.replace(/<[^>]+>/g, ''));
     return;
   }
   const token = process.env.TELEGRAM_BOT_TOKEN;
-  const chatId = process.env.TELEGRAM_CHAT_ID;
+  const chatId = chatIdOverride || process.env.TELEGRAM_CHAT_ID;
   if (!token || !chatId) {
     throw new Error('缺少 TELEGRAM_BOT_TOKEN 或 TELEGRAM_CHAT_ID，請設定 .env');
   }
@@ -51,4 +51,11 @@ async function send(text, { dry = false } = {}) {
   );
 }
 
-module.exports = { formatItem, send };
+/** 發到管理者私聊（未設定 TELEGRAM_ADMIN_CHAT_ID 時靜默跳過） */
+async function sendAdmin(text, { dry = false } = {}) {
+  const adminId = process.env.TELEGRAM_ADMIN_CHAT_ID;
+  if (!adminId) return;
+  await send(text, { dry, chatId: adminId });
+}
+
+module.exports = { formatItem, send, sendAdmin };

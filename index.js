@@ -3,7 +3,7 @@ require('./src/error-notify').install();
 const schedule = require('node-schedule');
 const config = require('./config.json');
 const { fetchWatch } = require('./src/crawler');
-const { formatItem, send } = require('./src/telegram');
+const { formatItem, send, sendAdmin } = require('./src/telegram');
 const store = require('./src/store');
 
 const ONCE = process.argv.includes('--once');
@@ -48,6 +48,7 @@ async function runWatch(watch, seen) {
   }
 
   const record = seen[watch.name];
+  let notified = 0;
   for (const it of items) {
     const prev = record[it.id];
 
@@ -55,6 +56,7 @@ async function runWatch(watch, seen) {
       // 新上架
       await send(formatItem(it, watch.name, 'new'), { dry: DRY });
       record[it.id] = { price: it.price, firstSeen: Date.now() };
+      notified++;
       console.log(`[${now()}] [${watch.name}] 通知新物件 ${it.id} ${it.title.slice(0, 20)}`);
       await sleep(1500); // Telegram 限流保護
     } else if (
@@ -65,12 +67,19 @@ async function runWatch(watch, seen) {
     ) {
       // 降價（config.notifyPriceDrop 為 true 時才通知）
       await send(formatItem({ ...it, prevPrice: prev.price }, watch.name, 'priceDrop'), { dry: DRY });
+      notified++;
       console.log(`[${now()}] [${watch.name}] 通知降價 ${it.id}: ${prev.price} → ${it.price}`);
       record[it.id].price = it.price;
       await sleep(1500);
     } else if (it.price > 0 && it.price !== prev.price) {
       record[it.id].price = it.price; // 價格變動只更新紀錄，不通知
     }
+  }
+
+  // 無任何通知時發一行心跳到管理者私聊（不吵群組），確認排程有跑
+  if (notified === 0 && config.noNewsHeartbeat) {
+    const hhmm = new Date().toLocaleTimeString('zh-TW', { timeZone: 'Asia/Taipei', hour12: false, hour: '2-digit', minute: '2-digit' });
+    await sendAdmin(`✅ ${hhmm} ${watch.name} 檢查完成，無新物件（${items.length} 筆均已記錄）`, { dry: DRY });
   }
 }
 
