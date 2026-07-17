@@ -54,7 +54,7 @@ async function runWatch(watch, seen) {
 
     if (!prev) {
       // 新上架
-      await send(formatItem(it, watch.name, 'new'), { dry: DRY });
+      await send(formatItem(it, watch.name, 'new'), { dry: DRY, chatId: watch.chatId });
       record[it.id] = { price: it.price, firstSeen: Date.now() };
       notified++;
       console.log(`[${now()}] [${watch.name}] 通知新物件 ${it.id} ${it.title.slice(0, 20)}`);
@@ -66,7 +66,7 @@ async function runWatch(watch, seen) {
       it.price < prev.price
     ) {
       // 降價（config.notifyPriceDrop 為 true 時才通知）
-      await send(formatItem({ ...it, prevPrice: prev.price }, watch.name, 'priceDrop'), { dry: DRY });
+      await send(formatItem({ ...it, prevPrice: prev.price }, watch.name, 'priceDrop'), { dry: DRY, chatId: watch.chatId });
       notified++;
       console.log(`[${now()}] [${watch.name}] 通知降價 ${it.id}: ${prev.price} → ${it.price}`);
       record[it.id].price = it.price;
