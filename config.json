@@ -27,24 +27,24 @@
       "schedule": "0 12 * * *"
     },
     {
-      "name": "雲林北港 中古屋 2-3房 0-1000萬 0-10年",
-      "searchUrl": "https://sale.591.com.tw/?shType=list&type=2&regionid=14&section=200&kind=9&price=0_1000&houseage=$0_$10&pattern=2,3",
+      "name": "雲林北港 中古屋 2-3房 0-1200萬 0-10年",
+      "searchUrl": "https://sale.591.com.tw/?shType=list&type=2&regionid=14&section=200&kind=9&price=0_1200&houseage=$0_$10&pattern=2,3",
       "excludeNewHouse": true,
       "excludeKeywords": [],
       "schedule": "0 9 * * *",
       "chatId": "-5399959332"
     },
     {
-      "name": "雲林北港 新成屋 2-3房 0-1000萬",
-      "searchUrl": "https://newhouse.591.com.tw/list?regionid=14&sectionid=200&room=2,3&total_price=0_1000&build_type=2",
+      "name": "雲林北港 新成屋 2-3房 0-1200萬",
+      "searchUrl": "https://newhouse.591.com.tw/list?regionid=14&sectionid=200&room=2,3&total_price=0_1200&build_type=2",
       "maxPages": 12,
       "excludeKeywords": [],
       "schedule": "0 12 * * *",
       "chatId": "-5399959332"
     },
     {
-      "name": "雲林北港 預售屋 2-3房 0-1000萬",
-      "searchUrl": "https://newhouse.591.com.tw/list?regionid=14&sectionid=200&room=2,3&total_price=0_1000&build_type=1",
+      "name": "雲林北港 預售屋 2-3房 0-1200萬",
+      "searchUrl": "https://newhouse.591.com.tw/list?regionid=14&sectionid=200&room=2,3&total_price=0_1200&build_type=1",
       "maxPages": 12,
       "excludeKeywords": [],
       "schedule": "0 15 * * *",
