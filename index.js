@@ -2,7 +2,7 @@ require('dotenv').config();
 require('./src/error-notify').install();
 const schedule = require('node-schedule');
 const config = require('./config.json');
-const { fetchWatch } = require('./src/crawler');
+const { fetchWatch, isListingAlive } = require('./src/crawler');
 const { formatItem, send, sendAdmin } = require('./src/telegram');
 const store = require('./src/store');
 const moi = require('./src/moi');
@@ -56,7 +56,11 @@ async function runWatch(watch, seen) {
     const prev = record[it.id];
 
     if (!prev) {
-      // 新上架
+      // 新上架：先驗證詳情頁還在（審核被撤的物件不推、不記錄，重新上架時再推）
+      if (it.source === 'sale' && !(await isListingAlive(it.link))) {
+        console.log(`[${now()}] [${watch.name}] 物件 ${it.id} 詳情頁已 404（疑審核撤下），跳過`);
+        continue;
+      }
       await send(formatItem(it, watch.name, 'new'), { dry: DRY, chatId: watch.chatId });
       record[it.id] = { price: it.price, firstSeen: Date.now() };
       notified++;

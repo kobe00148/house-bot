@@ -174,4 +174,22 @@ async function fetchWatch(watch, { maxPages = 3, pageDelayMs = 3000 } = {}) {
   return { total, items: unique };
 }
 
-module.exports = { fetchWatch };
+/**
+ * 推播前確認物件詳情頁還活著（591 新刊登可能在審核中被撤，列表已收錄但 detail 已 404）。
+ * 只有明確 404 視為死連結；429/逾時等狀況一律當作活著，避免誤擋。
+ */
+async function isListingAlive(link) {
+  try {
+    const res = await axios.get(link, {
+      headers: headersFor('https://sale.591.com.tw/'),
+      timeout: 10000,
+      validateStatus: () => true,
+      maxRedirects: 3,
+    });
+    return res.status !== 404;
+  } catch {
+    return true;
+  }
+}
+
+module.exports = { fetchWatch, isListingAlive };
